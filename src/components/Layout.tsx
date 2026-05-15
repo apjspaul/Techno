@@ -8,10 +8,12 @@ import {
   Plus, 
   Search, 
   Bell, 
-  Settings 
+  LogOut 
 } from 'lucide-react';
 import { Page } from '../types';
 import { cn } from '../lib/utils';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,6 +22,8 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, currentPage, onPageChange }: LayoutProps) {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const menuItems = [
     { id: 'dashboard' as Page, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'classes' as Page, label: 'Classes', icon: School },
@@ -27,6 +31,12 @@ export default function Layout({ children, currentPage, onPageChange }: LayoutPr
     { id: 'payments' as Page, label: 'Payments', icon: Wallet },
     { id: 'communication' as Page, label: 'Communication', icon: MessageSquare },
   ];
+
+  const handleSignOut = async () => {
+    localStorage.removeItem('guest_mode');
+    await signOut();
+    navigate('/login');
+  };
 
   return (
     <div className="flex min-h-screen bg-[#09090b]">
@@ -63,9 +73,12 @@ export default function Layout({ children, currentPage, onPageChange }: LayoutPr
           ))}
         </nav>
 
-        <button className="bg-primary text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all text-sm">
-          <Plus size={18} />
-          <span>New Entry</span>
+        <button 
+          onClick={handleSignOut}
+          className="mt-4 flex items-center gap-4 p-4 rounded-xl transition-all duration-200 active:scale-95 text-[#a1a1aa] hover:bg-red-500/10 hover:text-red-500 text-left w-full"
+        >
+          <LogOut size={18} />
+          <span className="text-sm font-bold uppercase tracking-widest">Sign Out</span>
         </button>
       </aside>
 
